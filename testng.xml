@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Master Runner Suite">
+    <test name="Master Test Execution">
+        <classes>
+            <class name="com.qa.runner.MasterRunner" />
+        </classes>
+    </test>
+</suite>
