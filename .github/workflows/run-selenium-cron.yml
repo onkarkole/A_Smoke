@@ -1,0 +1,47 @@
+name: Run Selenium tests every 15 minutes (Java 21, secure)
+
+on:
+  # GitHub Actions uses UTC; this runs at :00, :15, :30, :45 every hour.
+  schedule:
+    - cron: "*/15 * * * *"
+  # Optional: allow manual trigger from Actions tab
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write   # Keep if you may use OIDC/secret manager later
+  contents: read
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Log run time (UTC and IST)
+        run: |
+          echo "UTC: $(date -u '+%Y-%m-%d %H:%M:%S %Z')"
+          TZ=Asia/Kolkata date '+IST: %Y-%m-%d %H:%M:%S %Z'
+
+      - name: Verify ENCRYPTION_KEY is present
+        env:
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+        run: |
+          if [ -z "$ENCRYPTION_KEY" ]; then
+            echo "ENCRYPTION_KEY not found"
+            exit 1
+          fi
+          echo "Secret available"
+
+      - name: Run Maven tests
+        env:
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+        run: mvn -B clean test
