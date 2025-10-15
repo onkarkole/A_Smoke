@@ -2,7 +2,6 @@ package com.qa.common;
 
 import com.qa.utils.*;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 import org.openqa.selenium.*;
@@ -20,6 +19,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.InetAddress;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.HashMap;
@@ -147,7 +147,16 @@ public class DriverManager {
             TL_NET_ERROR_TYPE.remove();
             TL_DOC_STATUS.remove();
 
-            TestUtils.log().info("🌐 Navigating to: {} (attempt {}/{})", url, attempt, NAVIGATION_RETRY_COUNT);
+            URI uri = null;
+            try {
+                uri = new URI(url);
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+            String[] segments = uri.getPath().split("/");
+            String portalName = segments.length > 1 ? segments[1] : "unknown";
+
+            TestUtils.log().info("🌐 Navigating to: {} (attempt {}/{})", portalName, attempt, NAVIGATION_RETRY_COUNT);
 
             try {
                 driver.navigate().to(url);
@@ -173,7 +182,7 @@ public class DriverManager {
                     throw new RuntimeException("Browser network error page detected");
                 }
 
-                TestUtils.log().info("✅ Navigation healthy: {}", url);
+                TestUtils.log().info("✅ Navigation healthy to : {}", portalName);
                 return; // success, stop retrying
 
             } catch (RuntimeException e) {

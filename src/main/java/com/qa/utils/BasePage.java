@@ -26,7 +26,6 @@ public class BasePage {
         } else {
             url = url + SecureConfig.value(SecKeys.ADMINPORTAL);
         }
-        TestUtils.log().info("Navigating to: {}", url);
         DriverManager.checkNavigationHealth(url);
     }
 
