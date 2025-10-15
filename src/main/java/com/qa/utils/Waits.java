@@ -62,7 +62,7 @@ public class Waits {
 
     public void staticWait() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(4000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IllegalArgumentException("Thread was interrupted", e);
