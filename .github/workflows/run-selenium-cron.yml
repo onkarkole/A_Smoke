@@ -4,7 +4,7 @@ on:
   # GitHub Actions uses UTC; this runs at :00, :15, :30, :45 every hour.
   schedule:
     - cron: "*/15 * * * *"
-  # Optional: allow manual trigger from Actions tab
+  # Optional: allow manual or external API trigger
   workflow_dispatch: {}
 
 permissions:
@@ -26,22 +26,28 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Log run time (UTC and IST)
+      - name: Log current run time (UTC + IST)
         run: |
-          echo "UTC: $(date -u '+%Y-%m-%d %H:%M:%S %Z')"
-          TZ=Asia/Kolkata date '+IST: %Y-%m-%d %H:%M:%S %Z'
+          echo "----------------------"
+          echo "UTC Time: $(date -u '+%Y-%m-%d %H:%M:%S %Z')"
+          TZ=Asia/Kolkata date '+IST Time: %Y-%m-%d %H:%M:%S %Z'
+          echo "----------------------"
 
-      - name: Verify ENCRYPTION_KEY is present
+      - name: Verify ENCRYPTION_KEY is available
         env:
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
         run: |
           if [ -z "$ENCRYPTION_KEY" ]; then
-            echo "ENCRYPTION_KEY not found"
+            echo "::error::❌ ENCRYPTION_KEY secret not found. Please set it under Repository > Settings > Secrets."
             exit 1
+          else
+            echo "✅ Secret found and available to use."
           fi
-          echo "Secret available"
 
-      - name: Run Maven tests
+      - name: Run Maven tests with encryption key
         env:
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-        run: mvn -B clean test
+        run: |
+          echo "Starting Selenium tests..."
+          mvn -B clean test
+          echo "✅ Test execution completed."
