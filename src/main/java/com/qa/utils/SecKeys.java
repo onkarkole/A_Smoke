@@ -2,7 +2,6 @@ package com.qa.utils;
 
 public final class SecKeys {
     private SecKeys() {}
-
     // Encrypted key tokens (no real names visible)
     public static final String AMFI_ADMIN_USERNAME = "K|0f65ce612743f5d523f6c46c06ff602e52eeaacbddead10585e781d3f2da8ca0";
     public static final String AMFI_ADMIN_PASSWORD = "K|3bafede06730a164c043f070c4b75e5e8886dc7d4e8f85cc53b8387952b6b1d7";
